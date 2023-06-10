@@ -182,7 +182,7 @@ async def english(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 
 
-app = ApplicationBuilder().token("6094429458:AAHqt5UjgoSYXvO8vCzRAKpJ4vUj3I94FqY").build()
+app = ApplicationBuilder().token("YOUR_TOKEN").build()
 
 conversation_handler = ConversationHandler(
     entry_points = [CommandHandler('hello',hello)],
