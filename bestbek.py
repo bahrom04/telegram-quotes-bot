@@ -22,7 +22,7 @@ async def english(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(choice(english_quotes))
 
 
-app = ApplicationBuilder().token("6298564597:AAFxPkJyCIajSKrZHhg8Hm7lv4M2qzzwguY").build()
+app = ApplicationBuilder().token("").build()
 
 conversation_handler = ConversationHandler(
     entry_points = [CommandHandler('hello', hello)],
