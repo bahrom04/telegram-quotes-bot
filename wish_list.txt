@@ -1,0 +1,8 @@
+Features to improve bot named @bestbekbot and we want in future
+
+Big goals:
+    Make admin feature that adds quotes by own
+
+Minor goals:
+    Add new quotes over 100+
+    Make analytics button that shows number of users and daily activity
