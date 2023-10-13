@@ -42,14 +42,14 @@ async def add_template(state,user_id):
 
 
 #cheking if user exists
-async def user_number():
+def user_number():
     db = sq.connect('iqtibos.db')
     cur = db.cursor()
     fetch = cur.execute('SELECT id FROM users').fetchall()
     return fetch
 
 
-async def add_user(user):
+def add_user(user):
     db = sq.connect('iqtibos.db')
     cur = db.cursor()
     cur.execute("INSERT INTO users (tg_id, username) VALUES (?, ?)",(user))

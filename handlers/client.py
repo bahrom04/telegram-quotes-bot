@@ -45,8 +45,8 @@ async def send_welcome(message: types.Message):
         try:
             db.add_user(data)
             print('New member added to the database')
-        except Exception as e:
-            print('Something went wrong: ', e)
+        except:
+            pass
 
     await message.reply(text='Choose Phone Characteristics', reply_markup=kb)
 
@@ -55,8 +55,7 @@ async def send_welcome(message: types.Message):
 @dp.message_handler(regexp='(^Uz🇺🇿[s]?$)')
 async def uz(message: types.Message):
     await message.answer(choice(uzbek_quotes), reply_markup=kb)
-    path = f'/home/bahrom/Desktop/Telegram Bots/telegram-quotes-bot/whatIsLove/created/1107759940.mp4'
-    await message.reply_video(video=path, caption='welcome')
+    
 
 
       
@@ -72,10 +71,12 @@ async def eng(message: types.Message):
 @dp.message_handler(regexp="(^Create Mike O'Hearn meme)")
 async def create_meme(message: types.Message):
     await NewTemplate.template_number.set()
-
+    path = f'/home/bahrom/Desktop/TelegramBots/telegram-quotes-bot/whatIsLove/uploads/template.jpg'
+    path = open(file=path, mode='rb')
+    template = types.InputFile(path)
     await bot.send_photo(
         chat_id=message.from_user.id,
-        photo='https://www.google.com/imgres?imgurl=https%3A%2F%2Fstatic.vecteezy.com%2Fsystem%2Fresources%2Fthumbnails%2F009%2F273%2F278%2Fsmall%2Fconcept-of-loneliness-and-disappointment-in-love-sad-man-sitting-element-of-the-picture-is-decorated-by-nasa-photo.jpg&tbnid=dvkt9wTNftwgHM&vet=12ahUKEwjnirPSuO6BAxXAGxAIHc_ECMgQMygGegQIARBk..i&imgrefurl=https%3A%2F%2Fwww.vecteezy.com%2Ffree-photos%2Fsad-love&docid=5tuaouuYf8LpIM&w=300&h=200&q=photo&ved=2ahUKEwjnirPSuO6BAxXAGxAIHc_ECMgQMygGegQIARBk', 
+        photo=template, 
         reply_markup=inline_kb,
         caption='Choose template'
         )
@@ -105,13 +106,16 @@ async def add_item_name(message: types.Message, state: FSMContext):
     await message.answer('Video created')
     await db.add_template(state,message.from_user.id)
     await state.finish()
-    # await bot.send_video(video=f'/home/bahrom/Desktop/Telegram Bots/telegram-quotes-bot/whatIsLove/created/{id}.mp4', caption='welcome',chat_id=id)   
+    path = f'/home/bahrom/Desktop/TelegramBots/telegram-quotes-bot/whatIsLove/created/1107759940.mp4'
+    path = open(file=path, mode='rb')
+    video = types.InputFile(path)
+    await message.reply_video(video=video, caption='welcome')
 
 
-@dp.message_handler(regexp='(^Video created[s]?$)')
-async def title_saved(message: types.Message):
-    path = f'/home/bahrom/Desktop/Telegram Bots/telegram-quotes-bot/whatIsLove/created/1107759940.mp4'
-    await message.reply_video(video=path, caption='welcome',chat_id=message.from_user.id)
+# @dp.message_handler(regexp='(^Video created[s]?$)')
+# async def title_saved(message: types.Message):
+#     path = f'/home/bahrom/Desktop/Telegram Bots/telegram-quotes-bot/whatIsLove/created/1107759940.mp4'
+#     await message.reply_video(video=path, caption='welcome',chat_id=message.from_user.id)
 
 
     
