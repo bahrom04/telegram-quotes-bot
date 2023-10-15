@@ -22,7 +22,7 @@ def make_video(user_id, text, template_number):
     
 
     # Wrap the text every 20 or 27 characters
-    wrapped_text = textwrap.fill(text, 35)  # Adjust the line length as needed
+    wrapped_text = textwrap.fill(text, 32)  # Adjust the line length as needed
 
     video = VideoFileClip(video_path_file)
     vid_duration = video.duration

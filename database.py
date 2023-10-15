@@ -1,20 +1,25 @@
 import sqlite3 as sq
 
 
-async def db_start():
+def connect_db():
     global db, cur
     db = sq.connect('iqtibos.db')
+    
+
+
+async def db_start():
     cur = db.cursor()
     cur.execute('''CREATE TABLE IF NOT EXISTS users(
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                tg_id INTEGER, 
-                username TEXT)''')
+                id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                user_id TEXT PRIMARY KEY,
+                full_name TEXT,)''')
     
     db.commit()
 
     cur.execute('''CREATE TABLE IF NOT EXISTS templates(
                 i_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user TEXT,
+                full_name TEXT,
+                user TEXT PRIMARY KEY,
                 dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                 number TEXT,
                 desc TEXT)''')
@@ -24,7 +29,7 @@ async def db_start():
 
 
 async def cmd_start_db(user_id):
-    db = sq.connect('iqtibos.db')
+    # db = connect_db()
     cur = db.cursor()
     user = cur.execute("SELECT * FROM accounts WHERE tg_id == {key}".format(key=user_id)).fetchone()
     if not user:
@@ -32,27 +37,30 @@ async def cmd_start_db(user_id):
         db.commit()
 
 
-async def add_template(state,user_id):
-    db = sq.connect('iqtibos.db')
+# Log of context
+async def add_template(state,full_name,user_id):
+    # db = connect_db()
     cur = db.cursor()
     async with state.proxy() as data:
-        cur.execute("INSERT INTO templates (user, number, desc) VALUES (?, ?, ?)",
-                    (user_id, data['template_number'], data['title']))
+        cur.execute("INSERT INTO templates (full_name, user, number, desc) VALUES (?, ?, ?, ?)",
+                    (full_name, user_id, data['template_number'], data['title']))
         db.commit()
 
 
 #cheking if user exists
 def user_number():
-    db = sq.connect('iqtibos.db')
+    # db = connect_db()
     cur = db.cursor()
-    fetch = cur.execute('SELECT id FROM users').fetchall()
-    return fetch
+    fetch = cur.execute('SELECT user_id FROM users').fetchall()
+    ids = [i[0] for i in fetch]
+    return ids
 
 
+# Add new user to the database after start
 def add_user(user):
-    db = sq.connect('iqtibos.db')
+    # db = connect_db()
     cur = db.cursor()
-    cur.execute("INSERT INTO users (tg_id, username) VALUES (?, ?)",(user))
+    cur.execute("INSERT INTO users (user_id, full_name) VALUES (?, ?)",(user))
     db.commit()
 
 

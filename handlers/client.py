@@ -6,52 +6,64 @@ from english import english
 from client import bot, dp, storage
 from aiogram.types import MediaGroup,InputMediaPhoto
 from whatIsLove.main import make_video
-from whatIsLove.template_photo import get_photo_list
 from time import sleep
+import datetime
 import asyncio
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-import database as db
+import database
 
 
 
 
+# Calling data from english.py and uzbek.py
 uzbek_quotes = uzbek()
 english_quotes = english()
 
 
+# 2 States
 class NewTemplate(StatesGroup):
     template_number = State()
     title = State()
 
 
 
-# # Start point
-# async def start(message: types.Message):
-#     await db.db_start(message.from_user.id)
+@dp.message_handler(commands=['start'])
+async def cmd_id(message: types.Message):
+    await message.answer(text=f'''{message.from_user.first_name} Eng mashxur iqiboslarini o'qish uchun tilni tanlang''', reply_markup=kb)
 
-#     await message.reply(f"{message.from_user.first_name} Eng mashxur iqiboslarini o'qish uchun tilni tanlang", reply_markup=kb)
-
-
-
-async def send_welcome(message: types.Message):
-    if str(message.from_user.id) in db.user_number():
-        print('This is old user')
-    else:
+    if message.from_user.id not in database.user_number():
         member_id = message.from_user.id
         member_name = message.from_user.full_name
-        data = [member_name,member_id]
+        data = [member_id, member_name]
         try:
-            db.add_user(data)
-            print('New member added to the database')
+            database.add_user(data)
+            print(f'New member named [{member_name}] added to the database')
+
         except:
-            pass
+            print('Failed to add new member to the database')
+       
+                
+    
+    # Getting exact time when user started
+    current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    message = f'User[{message.from_user.id}]: Started bot at [{current_time}] \n'
 
-    await message.reply(text='Choose Phone Characteristics', reply_markup=kb)
+    # write time to file
+    with open('log.txt', 'a') as f:
+        f.write(message)
+        f.close()
 
 
 
+# Start point
+# @dp.message_handler(commands=['hello'])
+async def send_welcome(message: types.Message):
+    await message.answer(f'Hello {message.from_user.full_name}')
+
+
+   
 @dp.message_handler(regexp='(^Uz🇺🇿[s]?$)')
 async def uz(message: types.Message):
     await message.answer(choice(uzbek_quotes), reply_markup=kb)
@@ -101,15 +113,22 @@ async def add_item_name(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['title'] = message.text
     id = message.from_user.id
+    full_name = message.from_user.full_name
     make_video(message.from_user.id, data['title'], data['template_number'])
-    await asyncio.sleep(6)
-    await message.answer('Video created')
-    await db.add_template(state,message.from_user.id)
+    await asyncio.sleep(2)
+    await message.answer('Video processing...')
+    await database.add_template(state, full_name=full_name, user_id=id)
     await state.finish()
-    path = f'/home/bahrom/Desktop/TelegramBots/telegram-quotes-bot/whatIsLove/created/1107759940.mp4'
+
+    path = f'/home/bahrom/Desktop/TelegramBots/telegram-quotes-bot/whatIsLove/created/{id}.mp4'
     path = open(file=path, mode='rb')
     video = types.InputFile(path)
-    await message.reply_video(video=video, caption='welcome')
+    msg = '''
+    Mike O'Hearn Original Meme Template \n
+
+@bestbekbot
+    '''
+    await message.reply_video(video=video, caption=msg,reply_markup=kb)
 
 
 # @dp.message_handler(regexp='(^Video created[s]?$)')
@@ -124,5 +143,5 @@ async def add_item_name(message: types.Message, state: FSMContext):
 
 
 def register_handlers_client(dp: Dispatcher):
-    dp.register_message_handler(send_welcome, commands=['start'])
+    dp.register_message_handler(send_welcome, commands=['hello'])
 
